@@ -1,0 +1,113 @@
+#include <Servo.h>
+
+Servo myServo;
+
+void setup()
+{
+  myServo.attach(3);
+  myServo.write(0);
+  
+  pinMode(5, OUTPUT);
+  pinMode(6, OUTPUT);
+  pinMode(9, OUTPUT);
+  pinMode(11, OUTPUT);
+}
+
+void loop()
+{
+  Main();
+}
+
+void LedsOpen(int l1, int l2, int l3, int l4, int value, int delaying)
+{
+  analogWrite(l1, value);
+  delay(delaying);
+  analogWrite(l2, value);
+  delay(delaying);
+  analogWrite(l3, value);
+  delay(delaying);
+  analogWrite(l4, value);
+  delay(delaying); 
+}
+
+void LedsClose(int l1, int l2, int l3, int l4, int delaying)
+{
+  analogWrite(l1, LOW);
+  delay(delaying);
+  analogWrite(l2, LOW);
+  delay(delaying);
+  analogWrite(l3, LOW);
+  delay(delaying);
+  analogWrite(l4, LOW);
+  delay(delaying);
+}
+
+void Leds() 
+{
+  int ldr_pin = analogRead(A0);
+  int ldr_value = map(ldr_pin, 0, 1023, 0, 255);
+  
+  int pot_pin = analogRead(A1);
+  int pot_value = map(pot_pin, 0, 1023, 0, 255);
+  
+  int pot_pin_2 = analogRead(A4);
+  int pot_value_2 = map(pot_pin_2, 0, 1023, 50, 250);
+  
+  int main_value = -ldr_value + pot_value;
+  
+  LedsOpen(5, 6, 9, 11, main_value, pot_value_2);
+  
+  myServo.write(0);
+  
+  LedsClose(5, 6, 9, 11, pot_value_2);
+}
+
+void Button() 
+{
+  int ldr_pin = analogRead(A0);
+  int ldr_value = map(ldr_pin, 0, 1023, 0, 255);
+  
+  int pot_pin = analogRead(A1);
+  int pot_value = map(pot_pin, 0, 1023, 0, 255);
+  
+  int main_value = -ldr_value + pot_value;
+  
+  int pot_pin_2 = analogRead(A4);
+  int pot_value_2 = map(pot_pin_2, 0, 1023, 50, 250);
+  
+  myServo.write(main_value);
+  
+  delay(pot_value_2 * 2);
+  
+  Leds();
+}
+
+void Main() 
+{
+  int button_pin = analogRead(A2);
+  
+  int bre = 0;
+  
+  while(button_pin > 700 && bre == 0) {
+    int button_pin_2 = analogRead(A3);
+    
+    if(button_pin_2 > 700) {
+       button_pin = 0;
+    }
+    
+    else {
+   	  Button();  
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
